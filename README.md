@@ -128,9 +128,12 @@ To consume theme you need to wrap the component with `Consumer`. Wrapping with `
 
 ### Consume theme using AppTheme.Consumer
 
-The `Consumer` resulting `function component` with one parameters that contains properties:
+The `Consumer` resulting `function component` with one parameter called `theme` consists of:
 
-- **`theme`** - represents current active theme it consists of `styles` and `props` property that you can consume to styling your component.
+- **`props`** -- represents current theme variables.
+
+- **`styles`** -- represents current theme named stylesheets.
+
 - **`change`** - a function to change theme.
 
 For more detail, have a look this example:
@@ -142,11 +145,11 @@ export class AwesomeComponent extends React.Component {
   public render() {
     return (
       <AppTheme.Consumer>
-        {({ change, theme }) => (
-          <View style={theme.styles.container}>
+        {({ theme: { props, styles, change } }) => (
+          <View style={styles.container}>
             <Button
-              style={theme.styles.button}
-              color={theme.props.color.primary}
+              style={styles.button}
+              color={props.color.primary}
               title="Switch to Red Theme"
               onPress={async () => {
                 change('red')
