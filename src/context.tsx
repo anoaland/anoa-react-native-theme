@@ -4,9 +4,13 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 import { Theme } from './builder'
 import { createThemeProvider, ThemeProviderProps } from './provider'
 
-export interface ThemeContextProps<TTheme, TThemes = any> {
-  theme: TTheme
-  change: (key: keyof TThemes) => void
+export interface ThemeContextProps<
+  TTheme extends Theme<any, any>,
+  TThemes = any
+> {
+  theme: Pick<TTheme, 'styles' | 'props'> & {
+    change: (key: keyof TThemes | 'default') => void
+  }
 }
 
 type CreateStyleFn<T extends StyleSheet.NamedStyles<T>, TProps> = (
@@ -64,9 +68,7 @@ export class ThemeContext<
     return (props: P) => {
       return (
         <this.Consumer>
-          {theme => (
-            <Component {...props} theme={theme.theme} change={theme.change} />
-          )}
+          {theme => <Component {...props} theme={theme.theme} />}
         </this.Consumer>
       )
     }
@@ -101,7 +103,12 @@ export class ThemeContext<
     this._activateTheme(key)
 
     this._Context = React.createContext<ThemeContextProps<TTheme, TThemes>>({
-      theme: this._theme,
+      theme: {
+        // @ts-ignore
+        props: this._theme.props,
+        // @ts-ignore
+        styles: this._theme.styles
+      },
       change: this._activateTheme
     }) as any
   }

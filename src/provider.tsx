@@ -1,9 +1,9 @@
 import React from 'react'
 
-interface ThemeContextProps<TTheme, TThemes> {
-  theme: TTheme
-  change: (key: keyof TThemes) => void
-}
+// interface ThemeContextProps<TTheme, TThemes> {
+//   theme: TTheme
+//   change: (key: keyof TThemes) => void
+// }
 
 export interface ThemeProviderProps<TTheme, TThemes> {
   getDefault?: () => Promise<keyof TThemes>
@@ -19,7 +19,7 @@ interface ThemeProviderState<TTheme, TThemes> {
 interface ThemeContext<TTheme, TThemes> {
   _buildContext: (key: keyof TThemes | 'default') => void
   _activateTheme: (key: keyof TThemes | 'default') => TTheme
-  _Context: React.Context<ThemeContextProps<TTheme, TThemes>>
+  _Context: any // React.Context<ThemeContextProps<TTheme, TThemes>>
   _themes: TThemes
   _key: keyof TThemes | 'default'
   _theme: TTheme
@@ -70,19 +70,25 @@ export const createThemeProvider = <TTheme, TThemes>(
       return (
         <_Context.Provider
           value={{
-            change: key => {
-              if (_key === key) {
-                return
-              }
-
-              const theme = _activateTheme(key)
-              this.setState({ key, theme }, () => {
-                if (onChange) {
-                  onChange(key, theme)
+            theme: {
+              // @ts-ignore
+              props: _theme.props,
+              // @ts-ignore
+              styles: _theme.styles,
+              // @ts-ignore
+              change: key => {
+                if (_key === key) {
+                  return
                 }
-              })
-            },
-            theme: _theme
+
+                const theme = _activateTheme(key)
+                this.setState({ key, theme }, () => {
+                  if (onChange) {
+                    onChange(key, theme)
+                  }
+                })
+              }
+            }
           }}
         >
           {this.props.children}
