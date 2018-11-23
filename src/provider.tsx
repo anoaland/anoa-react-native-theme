@@ -72,7 +72,7 @@ export const createThemeProvider = <TTheme, TThemes>(
           value={{
             theme: {
               // @ts-ignore
-              props: _theme.props,
+              vars: _theme.vars,
               // @ts-ignore
               styles: _theme.styles,
               // @ts-ignore

@@ -16,7 +16,7 @@ Theme and stylesheet manager for ReactNative
 import { createTheme } from 'anoa-react-native-theme'
 
 export const BlueTheme = createTheme(
-  // define all theme props here
+  // define all theme variables here
   // like color, thickness, radius, etc.
   {
     color: {
@@ -29,15 +29,15 @@ export const BlueTheme = createTheme(
     }
   },
 
-  // define named styles using defined theme props
-  props => ({
+  // define named styles using defined theme variables
+  vars => ({
     container: {
       padding: 40,
-      backgroundColor: props.color.primary
+      backgroundColor: vars.color.primary
     },
     button: {
-      borderWidth: props.border.thick,
-      backgroundColor: props.color.secondary
+      borderWidth: vars.border.thick,
+      backgroundColor: vars.color.secondary
     }
   })
 )
@@ -47,7 +47,7 @@ export const BlueTheme = createTheme(
 
 ```ts
 export const RedTheme = BlueTheme.extend(
-  // override default theme props value
+  // override default theme variables
   {
     color: {
       primary: 'red',
@@ -56,12 +56,12 @@ export const RedTheme = BlueTheme.extend(
   },
 
   // override default theme style
-  props => ({
+  vars => ({
     container: {
       padding: 80
     },
     button: {
-      borderWidth: props.border.bold
+      borderWidth: vars.border.bold
     }
   })
 )
@@ -99,14 +99,14 @@ export default class App extends Component {
   render() {
     return (
       <AppTheme.Provider
-        // optional props to get default theme
+        // optional prop to get default theme
         getDefault={async () => {
           // do async operation to get selected theme
           // should returns 'default' or the object key of themes
           // you've defined in the context (eg: 'red' for RedTheme)
           return await MyFancyStorage.getTheme()
         }}
-        // optional props, the event that listen when theme get changed
+        // optional prop, the event that listen when theme get changed
         onChange={async key => {
           // key returns the 'default' or the object key of themes
           await MyFancyStorage.setTheme(key)
@@ -130,7 +130,7 @@ To consume theme you need to wrap the component with `Consumer`. Wrapping with `
 
 The `Consumer` resulting `function component` with one parameter called `theme` consists of:
 
-- **`props`** -- represents current theme variables.
+- **`vars`** -- represents current theme variables.
 
 - **`styles`** -- represents current theme named stylesheets.
 
@@ -145,11 +145,11 @@ export class AwesomeComponent extends React.Component {
   public render() {
     return (
       <AppTheme.Consumer>
-        {({ theme: { props, styles, change } }) => (
+        {({ theme: { vars, styles, change } }) => (
           <View style={styles.container}>
             <Button
               style={styles.button}
-              color={props.color.primary}
+              color={vars.color.primary}
               title="Switch to Red Theme"
               onPress={async () => {
                 change('red')
@@ -199,10 +199,10 @@ If you are fans of class decorator, you can use `AppTheme.withThemeClass` class 
 
 ```tsx
 // Theme props injected into AppThemeProps (see explanation bellow).
-// We make it Partial as we don't wont this props to be required when
-// using this component.
+// We make it Partial as we won't this props to be required when
+// using this component in other component.
 export interface LoginProps extends Partial<AppThemeProps> {
-  // some props
+  // some props owned by Login component
 }
 
 @AppTheme.withThemeClass()
@@ -218,7 +218,7 @@ export class Login extends React.Component<LoginProps> {
 
     return (
       <View style={theme.styles.button}>
-        <Text style={{ color: theme.props.color.primary }}>Login</Text>
+        <Text style={{ color: theme.vars.color.primary }}>Login</Text>
       </View>
     )
   }
@@ -227,7 +227,7 @@ export class Login extends React.Component<LoginProps> {
 
 **AppThemeProps**
 
-For typing convenience we need `AppThemeProps` interface that provide app theme props accessibility. Creating this interface is easily done by:
+For typing convenience we need `AppThemeProps` interface that provides app theme props accessibility. Creating this interface is easily done by:
 
 ```ts
 import { ThemeContextProps } from 'anoa-react-native-theme'
@@ -238,7 +238,7 @@ export type AppThemeProps = ThemeContextProps<typeof BlueTheme>
 
 ## Create local stylesheet
 
-The `AppTheme` also comes with `createStyleSheet` function that let you create custom local styles for your component using theme props values.
+The `AppTheme` also comes with `createStyleSheet` function that let you create custom local styles for your component using theme variables.
 
 ```tsx
 @AppTheme.withThemeClass()
@@ -256,10 +256,10 @@ export class About extends React.Component<AboutProps> {
   }
 }
 
-// create stylesheet based on theme props value
-const styles = AppTheme.createStyleSheet(props => ({
+// create stylesheet based on theme variables
+const styles = AppTheme.createStyleSheet(vars => ({
   container: {
-    backgroundColor: props.color.primary,
+    backgroundColor: vars.color.primary,
     padding: 25
   }
 }))

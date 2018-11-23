@@ -8,13 +8,13 @@ export interface ThemeContextProps<
   TTheme extends Theme<any, any>,
   TThemes = any
 > {
-  theme: Pick<TTheme, 'styles' | 'props'> & {
+  theme: Pick<TTheme, 'styles' | 'vars'> & {
     change: (key: keyof TThemes | 'default') => void
   }
 }
 
-type CreateStyleFn<T extends StyleSheet.NamedStyles<T>, TProps> = (
-  props: TProps
+type CreateStyleFn<T extends StyleSheet.NamedStyles<T>, TVars> = (
+  vars: TVars
 ) => StyleSheet.NamedStyles<T>
 
 export class ThemeContext<
@@ -65,10 +65,10 @@ export class ThemeContext<
   withTheme<P>(
     Component: React.ComponentType<P & ThemeContextProps<TTheme, TThemes>>
   ): React.ComponentType<P> {
-    return (props: P) => {
+    return (vars: P) => {
       return (
         <this.Consumer>
-          {theme => <Component {...props} theme={theme.theme} />}
+          {theme => <Component {...vars} theme={theme.theme} />}
         </this.Consumer>
       )
     }
@@ -82,14 +82,14 @@ export class ThemeContext<
   }
 
   /**
-   * Create stylesheet using theme props values.
+   * Create stylesheet using theme variables.
    * @param styles function that returns named stylesheet.
    */
   createStyleSheet<TS>(
     styles: CreateStyleFn<TS, TProps>
   ): StyleSheet.NamedStyles<TS> {
     // @ts-ignore
-    return EStyleSheet.create(styles(this._defaultTheme.esProps))
+    return EStyleSheet.create(styles(this._defaultTheme.esVars))
   }
 
   private _activateTheme(key: keyof TThemes | 'default') {
@@ -105,7 +105,7 @@ export class ThemeContext<
     this._Context = React.createContext<ThemeContextProps<TTheme, TThemes>>({
       theme: {
         // @ts-ignore
-        props: this._theme.props,
+        vars: this._theme.vars,
         // @ts-ignore
         styles: this._theme.styles
       },

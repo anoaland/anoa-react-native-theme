@@ -6,15 +6,15 @@ type DeepPartial<T> = { [P in keyof T]?: Partial<T[P]> }
 type NamedStyles<T> = StyleSheet.NamedStyles<T>
 
 export type ExtendThemeFunction<T, R, TC> = (
-  esProps: DeepPartial<T>,
+  esVars: DeepPartial<T>,
   styles?: (vars: T) => DeepPartial<NamedStyles<R>>
 ) => Theme<T, R, TC>
 
 export interface Theme<T, R, TC = Partial<T>> {
   /**
-   * Extended stylesheet props.
+   * Extended stylesheet variables.
    */
-  esProps: TC
+  esVars: TC
 
   /**
    * Named styles.
@@ -22,9 +22,9 @@ export interface Theme<T, R, TC = Partial<T>> {
   styles: R
 
   /**
-   * Theme props values.
+   * Theme variables.
    */
-  props: T
+  vars: T
 
   /**
    * Create new theme from this theme.
@@ -39,12 +39,12 @@ export interface Theme<T, R, TC = Partial<T>> {
 
 /**
  * Create new theme.
- * @param props Styles variables
+ * @param vars Styles variables
  * @param styles Named styles
  * @param parentStyles Named styles parent
  */
 export function createTheme<T, R>(
-  props: T,
+  vars: T,
   styles?: (vars: T) => Partial<NamedStyles<R>>,
   parentStyles?: {}
 ): Theme<T, R, Partial<T>> {
@@ -67,20 +67,20 @@ export function createTheme<T, R>(
     return res
   }
 
-  const esProps = buildEsStyleObject(props)
+  const esVars = buildEsStyleObject(vars)
 
   const mergedStyle = merge(
     parentStyles || {},
-    styles ? (styles(esProps) as T & R) : ({} as any)
+    styles ? (styles(esVars) as T & R) : ({} as any)
   )
 
   const createdStyles = EStyleSheet.create(mergedStyle) as any
 
   return {
-    esProps,
+    esVars,
     styles: createdStyles,
     extend: (newProps, newStyles) => {
-      const mergedProps = merge(props, newProps as Partial<T>) as T
+      const mergedProps = merge(vars, newProps as Partial<T>) as T
       return createTheme(
         mergedProps,
         newStyles
@@ -93,6 +93,6 @@ export function createTheme<T, R>(
       EStyleSheet.clearCache()
       EStyleSheet.build(esObjectRecord)
     },
-    props
+    vars
   }
 }
