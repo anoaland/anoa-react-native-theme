@@ -1,6 +1,6 @@
 {
   "name": "anoa-react-native-theme",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Theme and stylesheet manager for ReactNative",
   "main": "dist/index.js",
   "typings": "typings/index.d.ts",
