@@ -104,12 +104,10 @@ export class ThemeContext<
 
     this._Context = React.createContext<ThemeContextProps<TTheme, TThemes>>({
       theme: {
-        // @ts-ignore
-        vars: this._theme.vars,
-        // @ts-ignore
-        styles: this._theme.styles
-      },
-      change: this._activateTheme
+        vars: this._theme.vars as TTheme['vars'],
+        styles: this._theme.styles as TTheme['styles'],
+        change: this._activateTheme
+      }
     }) as any
   }
 }

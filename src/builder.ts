@@ -19,7 +19,7 @@ export interface Theme<T, R, TC = Partial<T>> {
   /**
    * Named styles.
    */
-  styles: R
+  styles: NamedStyles<R>
 
   /**
    * Theme variables.
@@ -72,7 +72,7 @@ export function createTheme<T, R>(
   const mergedStyle = merge(
     parentStyles || {},
     styles ? (styles(esVars) as T & R) : ({} as any)
-  )
+  ) as any
 
   const createdStyles = EStyleSheet.create(mergedStyle) as any
 
